@@ -12,23 +12,23 @@ void Communicate(Dictionary &dictionary, const string &fileNameOutput)
 	string answer;
 	string breakString = "...";
 	//string breakAnswer = "";
-	Dictionary::iterator position;
-	bool areChangesInDictionary = false;
-	bool isRightAnswer = false;
 	getline(cin, answer);
+	bool exitRequested = true;
 	if (answer != breakString)
 	{
-		isRightAnswer = true;
+		exitRequested = false;
 	}
-	while (isRightAnswer)
+	bool areChangesInDictionary = false;
+	while (!exitRequested)
 	{
+		Dictionary::iterator position;
 		position = dictionary.find(answer);
 		if (position == dictionary.end())
 		{
 			cout << "Неизвестное слово " << answer << ". Введите перевод или пустую строку для отказа.\n";
 			string translation;
 			getline(cin, translation);
-			if (!translation.empty())             //translation != breakAnswer
+			if (!translation.empty() && translation != breakString)             //translation != breakAnswer
 			{
 				dictionary[answer] = translation;
 				cout << "Слово " << answer << " сохранено в словаре как " << translation << ".\n";
@@ -43,11 +43,11 @@ void Communicate(Dictionary &dictionary, const string &fileNameOutput)
 		{
 			cout << position->second << "\n";
 		}
-		isRightAnswer = false;
+		exitRequested = true;
 		getline(cin, answer);
 		if (answer != breakString)
 		{
-			isRightAnswer = true;
+			exitRequested = false;
 		}
 	}
 	if (areChangesInDictionary)
@@ -57,7 +57,7 @@ void Communicate(Dictionary &dictionary, const string &fileNameOutput)
 		if (answer == "y" || answer == "Y")
 		{
 			SaveDictionary(dictionary, fileNameOutput);
+			cout << "Изменения сохранены.До свидания.\n";
 		}
-		cout << "Изменения сохранены.До свидания.\n";
 	}
 }

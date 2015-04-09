@@ -5,48 +5,54 @@
 
 using namespace std;
 
-void FindBrekets(const string &line, int &start, int &end)
+void DivideStringForOriginalAndTranslation(string &translation, string &original)
 {
-	for (unsigned int i = start; i < line.size(); ++i)
+	int startLine = 0, endLine = translation.size();
+	for (unsigned int i = startLine; i < translation.size(); ++i)
 	{
-		if (line[i] == '[')
+		if (translation[i] == '[')
 		{
-			start = i + 1;
+			startLine = i + 1;
 		}
-		if (line[i] == ']')
+		if (translation[i] == ']')
 		{
-			end = i - 1;
+			endLine = i - 1;
 			break;
 		}
 	}
+	original = translation.substr(startLine, endLine);
+	translation.erase(0, endLine + 3);
 }
 
 void ReadToDictionary(Dictionary &dictionary, const string &fileNameInput)
 {
-	SetConsoleOutputCP(1251);
-	ifstream dictionaryFile(fileNameInput, ifstream::in);
-
+	ifstream dictionaryFile;
+	dictionaryFile.open(fileNameInput, ifstream::in);
 	if (!dictionaryFile.is_open())
 	{
-		printf("Error: cannot load input file\n");
-		system("pause");
-		exit(1);
+		bool isFileOpen = false;
+		while (!isFileOpen)
+		{
+			cout << "Error: cannot load input file. Try again to enter new file name.\n";
+			string fileName;
+			getline(cin, fileName);
+			dictionaryFile.open(fileName, ifstream::in);
+			if (dictionaryFile.is_open())
+			{
+				isFileOpen = true;
+			}
+		}
 	}
-	string line, key;
-	Dictionary::iterator position;
-	int startLine, endLine;
 	while (dictionaryFile.good())
 	{
-		getline(dictionaryFile, line);
-		startLine = 0;
-		endLine = line.size();
-		FindBrekets(line, startLine, endLine);
-		key = line.substr(startLine, endLine);
-		line.erase(0, endLine + 3);
-		position = dictionary.find(key);
+		string translation, original;
+		getline(dictionaryFile, translation);
+		DivideStringForOriginalAndTranslation(translation, original);
+		Dictionary::iterator position;
+		position = dictionary.find(original);
 		if (position == dictionary.end())
 		{
-			dictionary[key] = line;
+			dictionary[original] = translation;
 		}
 	}
 	dictionaryFile.close();
@@ -54,19 +60,27 @@ void ReadToDictionary(Dictionary &dictionary, const string &fileNameInput)
 
 void SaveDictionary(Dictionary &dictionary, const string &fileNameInput)
 {
-	ofstream dictionaryFile(fileNameInput, ios::out);
+	ofstream dictionaryFile;
+	dictionaryFile.open(fileNameInput, ios::out);
 
 	if (!dictionaryFile.is_open())
 	{
-		printf("Error: cannot create output file\n");
-		system("pause");
-		exit(1);
+		bool isFileOpen = false;
+		while (!isFileOpen)
+		{
+			cout << "Error: cannot create output file. Try again to enter new file name.\n";
+			string fileName;
+			getline(cin, fileName);
+			dictionaryFile.open(fileName, ios::out);
+			if (dictionaryFile.is_open())
+			{
+				isFileOpen = true;
+			}
+		}
 	}
-	Dictionary::iterator position;
-	for (position = dictionary.begin(); position != dictionary.end(); ++position)
+	for (auto exemplar : dictionary)
 	{
-		dictionaryFile << "[" << position->first << "]" << " ";
-		dictionaryFile << position->second << "\n";
+		dictionaryFile << "[" << exemplar.first << "]" << " " << exemplar.second << "\n";
 	}
 	dictionaryFile.close();
 }

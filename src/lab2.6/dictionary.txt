@@ -1,11 +1,12 @@
-[] 
 [Red Square] Красная площадь
 [black] черный
 [blue] синий
 [cat] кот, кошка
 [dog] собака
 [green] зеленый
+[pink] розовый
 [rat] крыса 
 [red] красный
 [snake] змея
+[spoon] ложка
 [white] белый
